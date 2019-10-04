@@ -26,7 +26,7 @@ namespace TeSend
             Console.WriteLine("Your IP: " + localIP);
 
             Console.WriteLine("Remote IP address:");
-            string remoteIP = Console.ReadLine();
+            remoteIP = Console.ReadLine();
             //Console.WriteLine("Port number:");
             //string port = Console.ReadLine();
             
