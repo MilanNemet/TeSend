@@ -17,27 +17,26 @@ namespace TeSend
         static IPEndPoint remote_EP = null;
         static string localIP;
         static string remoteIP;
-        static string port;
+        static int port = 52052;
         static string partner = "Remote Host";
 
         static void Main(string[] args)
         {
-            localIP = GetLocalIP();
+            local_EP = GetLocalIPEndPoint();
+            localIP = local_EP.Address.ToString();
+            local_EP.Port = port;
             Console.WriteLine("Your IP: " + localIP);
+            Console.WriteLine("Port: " + local_EP.Port);
 
             Console.WriteLine("Remote IP address:");
             remoteIP = Console.ReadLine();
-            //Console.WriteLine("Port number:");
-            //string port = Console.ReadLine();
-            
+            remote_EP = new IPEndPoint(IPAddress.Parse(remoteIP), port);
+
 
             try
             {
                 client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-
-                local_EP = new IPEndPoint(IPAddress.Parse(localIP), 5000);
-                remote_EP = new IPEndPoint(IPAddress.Parse(remoteIP), 5000);
 
                 Console.ForegroundColor = ConsoleColor.Yellow;
 
@@ -76,30 +75,6 @@ namespace TeSend
                 Console.WriteLine("End of transmission!");
             }
             Console.ReadKey();
-            #region obsolete code path
-            //try
-            //{
-            //    client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            //    IPEndPoint endPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 5000);
-            //    client.Connect(endPoint);
-
-            //    Thread Sender = new Thread(() => SendMessage(client));
-            //    Thread Receiver = new Thread(() => ReceiveMessage(client));
-
-            //    Receiver.Start();
-            //    SendMessage(client);
-            //}
-            //catch (Exception e)
-            //{
-            //    Console.WriteLine(e.Message);
-            //}
-            //finally
-            //{
-            //    client.Close();
-            //    Console.WriteLine("End of transmission!");
-            //}
-            //Console.ReadKey();
-            #endregion
         }
         static void SendMessage(Socket _client)
         {
@@ -110,10 +85,9 @@ namespace TeSend
                 try
                 {
                     input = Console.ReadLine();
-                    //Console.WriteLine(input);
                     byte[] data = new byte[256];
                     data = Encoding.UTF8.GetBytes(input);
-                    client.Send(data, data.Length, SocketFlags.None);
+                    client.Send(data, data.Length, SocketFlags.None);                                                                                                                                                                                                                                                                                               
                     Thread.Sleep(200);
                 }
                 catch (Exception exc)
@@ -142,16 +116,13 @@ namespace TeSend
                 }
             }
         }
-        static string GetLocalIP()
+        static IPEndPoint GetLocalIPEndPoint()
         {
-            string localAddress;
             using (Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, 0))
             {
-                socket.Connect("8.8.8.8", 65530);
-                IPEndPoint endPoint = socket.LocalEndPoint as IPEndPoint;
-                localAddress = endPoint.Address.ToString();
+                socket.Connect("8.8.8.8", port);
+                return socket.LocalEndPoint as IPEndPoint;
             }
-            return localAddress;
         }
     }
 }
