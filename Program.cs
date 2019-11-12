@@ -64,15 +64,17 @@ namespace TeSend
                 Receiver.Start();
                 SendMessage(client);
             }
-            catch (Exception exc)
+            catch (Exception)
             {
-                throw exc;
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("Peer disconnected!");
             }
             finally
             {
                 client.Close();
                 server.Close();
                 Console.WriteLine("End of transmission!");
+                Console.ResetColor();
             }
             Console.ReadKey();
         }
@@ -87,12 +89,11 @@ namespace TeSend
                     input = Console.ReadLine();
                     byte[] data = new byte[256];
                     data = Encoding.UTF8.GetBytes(input);
-                    client.Send(data, data.Length, SocketFlags.None);                                                                                                                                                                                                                                                                                               
-                    Thread.Sleep(200);
+                    client.Send(data, data.Length, SocketFlags.None);
                 }
-                catch (Exception exc)
+                catch (Exception)
                 {
-                    throw exc;
+                    throw;
                 }
             }
         }
@@ -108,11 +109,13 @@ namespace TeSend
                     Console.ForegroundColor = ConsoleColor.Cyan;
                     Console.WriteLine($"{partner}: {Encoding.UTF8.GetString(data, 0, length)}");
                     Console.ResetColor();
-                    Thread.Sleep(500);
                 }
-                catch (Exception exc)
+                catch (Exception)
                 {
-                    throw exc;
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Connection lost! Nothing to receive from the peer...");
+                    Console.ResetColor();
+                    break;
                 }
             }
         }
